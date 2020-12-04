@@ -23,7 +23,7 @@ int main()
             continue;
         }
 
-        std::stringstream _line (line);
+        std::stringstream _line(line);
         std::string keyValue;
 
         while (_line >> keyValue)

@@ -3,20 +3,7 @@
 #include <string>
 #include <unordered_map>
 
-size_t countAnswers(std::unordered_map<char, size_t>* group, size_t people)
-{
-    auto itr = group->begin();
-
-    while (itr != group->end()) {
-        if (itr->second != people) {
-           group->erase(itr);
-        }
-
-        itr++;
-    }
-
-    return group->size();
-}
+size_t countAnswers(std::unordered_map<char, size_t>* group, size_t people);
 
 int main()
 {
@@ -48,4 +35,19 @@ int main()
     std::cout << sum << std::endl;
 
     return 0;
+}
+
+size_t countAnswers(std::unordered_map<char, size_t>* group, size_t people)
+{
+    auto itr = group->begin();
+
+    while (itr != group->end()) {
+        if (itr->second != people) {
+           group->erase(itr);
+        }
+
+        itr++;
+    }
+
+    return group->size();
 }
