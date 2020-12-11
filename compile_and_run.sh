@@ -1,6 +1,6 @@
 #!/bin/sh
 
-files=$(ls *'.cpp')
+files=$(ls | grep '.cpp' | sort -V)
 
 for file in $files; do
     binary=$(basename "$file" '.cpp')
