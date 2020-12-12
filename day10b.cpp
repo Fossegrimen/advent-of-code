@@ -1,7 +1,7 @@
 
 #include <algorithm>
+#include <cmath>
 #include <iostream>
-#include <cstdlib>
 #include <unordered_map>
 #include <vector>
 
@@ -47,7 +47,7 @@ uint64_t findPossibilities(std::unordered_map<size_t, uint64_t>& adapterArrangem
 
     for (size_t i = 1; i < 4; i++)
     {
-        if (n + i < joltageRatings.size() && validJoltageDiff(joltageRatings[n], joltageRatings[n + i]))
+        if ((n + i) < joltageRatings.size() && validJoltageDiff(joltageRatings[n], joltageRatings[n + i]))
         {
             possibilities += findPossibilities(adapterArrangementsMap, joltageRatings, n + i);
         }

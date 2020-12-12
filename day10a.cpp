@@ -23,18 +23,18 @@ int main()
 
     for (size_t i = 1; i < joltageRatings.size(); i++)
     {
-        if (joltageRatings[i] - joltageRatings[i - 1] == 1)
+        if ((joltageRatings[i] - joltageRatings[i - 1]) == 1)
         {
             difference_1++;
         }
 
-        if (joltageRatings[i] - joltageRatings[i - 1] == 3)
+        if ((joltageRatings[i] - joltageRatings[i - 1]) == 3)
         {
             difference_3++;
         }
     }
 
-    std::cout << difference_1 * difference_3 << std::endl;
+    std::cout << (difference_1 * difference_3) << std::endl;
 
     return 0;
 }
