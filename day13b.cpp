@@ -44,22 +44,22 @@ int main()
 
 int64_t chineseRemainderTheorem(std::vector<int64_t> n, std::vector<int64_t> a)
 {
-	int64_t product = 1;
+    int64_t product = 1;
 
     for (int64_t mod : n)
     {
         product *= mod;
     }
 
-	int64_t sum = 0;
+    int64_t sum = 0;
 
-	for (size_t i = 0; i < n.size(); i++)
+    for (size_t i = 0; i < n.size(); i++)
     {
-		int64_t b = product / n[i];
-		sum += a[i] * b * modularInverse(b, n[i]);
-	}
+        int64_t b = product / n[i];
+        sum += a[i] * b * modularInverse(b, n[i]);
+    }
 
-	return sum % product;
+    return sum % product;
 }
 
 int64_t modularInverse(int64_t a, int64_t n)
