@@ -1,23 +1,26 @@
 
+#include <algorithm>
 #include <iostream>
-#include <regex>
+#include <sstream>
 #include <string>
 #include <vector>
 
-int64_t chineseRemainderTheorem(std::vector<int64_t> n, std::vector<int64_t> a);
-int64_t modularInverse(int64_t a, int64_t n);
+typedef std::vector<int64_t> Vector;
+
+int64_t chineseRemainderTheorem(const Vector n, const Vector a);
+int64_t modularInverse(const int64_t a, const int64_t n);
 
 int main()
 {
-    std::vector<int64_t> aList;
-    std::vector<int64_t> nList;
+    Vector aList;
+    Vector nList;
 
     std::string line;
     std::getline(std::cin, line);
     std::getline(std::cin, line);
-    line = std::regex_replace(line, std::regex("[,]"), " ");
+    std::replace(line.begin(), line.end(), ',', ' ');
 
-    int64_t busId = -1;
+    int64_t busId   = -1;
     int64_t minutes = -1;
 
     std::stringstream _line(line);
@@ -42,7 +45,7 @@ int main()
     return 0;
 }
 
-int64_t chineseRemainderTheorem(std::vector<int64_t> n, std::vector<int64_t> a)
+int64_t chineseRemainderTheorem(const Vector n, const Vector a)
 {
     int64_t product = 1;
 
@@ -55,30 +58,30 @@ int64_t chineseRemainderTheorem(std::vector<int64_t> n, std::vector<int64_t> a)
 
     for (size_t i = 0; i < n.size(); i++)
     {
-        int64_t b = product / n[i];
+        const int64_t b = product / n[i];
         sum += a[i] * b * modularInverse(b, n[i]);
     }
 
     return sum % product;
 }
 
-int64_t modularInverse(int64_t a, int64_t n)
+int64_t modularInverse(const int64_t a, const int64_t n)
 {
-    int64_t t = 0;
-    int64_t r = n;
+    int64_t t     = 0;
+    int64_t r     = n;
     int64_t new_t = 1;
     int64_t new_r = a;
 
     while (new_r != 0)
     {
-        int64_t quotient = r / new_r;
+        const int64_t quotient = r / new_r;
 
-        int64_t tmp_t = t;
-        t = new_t;
+        const int64_t tmp_t = t;
+        t     = new_t;
         new_t = tmp_t - (quotient * new_t);
 
-        int64_t tmp_r = r;
-        r = new_r;
+        const int64_t tmp_r = r;
+        r     = new_r;
         new_r = tmp_r - (quotient * new_r);
     }
 

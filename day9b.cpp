@@ -4,39 +4,43 @@
 #include <limits>
 #include <vector>
 
-#define COMPARE_NUMBER 22477624
+typedef std::vector<uint64_t> PreambleList;
+
+uint64_t getBadPreamble(const PreambleList& preambleList);
 
 int main()
 {
-    std::vector<uint64_t> numbers;
-    uint64_t number = 0;
+    PreambleList preambleList;
+    uint64_t     preamble;
 
-    while (std::cin >> number)
+    while (std::cin >> preamble)
     {
-        numbers.push_back(number);
+        preambleList.push_back(preamble);
     }
 
-    for (size_t i = 25; i < numbers.size(); i++)
+    const uint64_t badPreamble = getBadPreamble(preambleList);
+
+    for (size_t i = 25; i < preambleList.size(); i++)
     {
-        for (size_t j = i - 25; j < i - 2; j++)
+        for (size_t j = i - 25; j < i; j++)
         {
             uint64_t sum = 0;
             uint64_t min = std::numeric_limits<uint64_t>::max();
             uint64_t max = 0;
 
-            sum += numbers[j];
-            min = std::min(min, numbers[j]);
-            max = std::max(max, numbers[j]);
+            sum += preambleList[j];
+            min  = std::min(min, preambleList[j]);
+            max  = std::max(max, preambleList[j]);
 
             for (size_t k = j + 1; k < i - 1; k++)
             {
-                sum += numbers[k];
-                min = std::min(min, numbers[k]);
-                max = std::max(max, numbers[k]);
+                sum += preambleList[k];
+                min  = std::min(min, preambleList[k]);
+                max  = std::max(max, preambleList[k]);
 
-                if (sum == COMPARE_NUMBER)
+                if (sum == badPreamble)
                 {
-                    std::cout << min << " " << max << std::endl;
+                    std::cout << (min + max) << std::endl;
                     return 0;
                 }
             }
@@ -44,4 +48,32 @@ int main()
     }
 
     return 1;
+}
+
+uint64_t getBadPreamble(const PreambleList& preambleList)
+{
+    for (size_t i = 25; i < preambleList.size(); i++)
+    {
+        bool foundNumber = false;
+
+        for (size_t j = i - 25; j < i; j++)
+        {
+            for (size_t k = j + 1; k < i; k++)
+            {
+                const uint64_t sum = preambleList[j] + preambleList[k];
+
+                if (sum == preambleList[i])
+                {
+                    foundNumber = true;
+                }
+            }
+        }
+
+        if (!foundNumber)
+        {
+            return preambleList[i];
+        }
+    }
+
+    return 0;
 }

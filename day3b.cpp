@@ -13,7 +13,7 @@ int main()
         map.push_back(line);
     }
 
-    const size_t width = map[0].size();
+    const size_t width  = map[0].size();
     const size_t height = map.size();
 
     const std::vector<size_t> offsetX = { 1, 3, 5, 7, 1 };
@@ -23,8 +23,8 @@ int main()
 
     for (size_t i = 0; i < offsetX.size(); i++)
     {
-        size_t x = 0;
-        size_t y = 0;
+        size_t x     = 0;
+        size_t y     = 0;
         size_t trees = 0;
 
         do

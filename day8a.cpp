@@ -13,49 +13,48 @@ enum class Opcode
 class Instruction
 {
 private:
-    Opcode opcode;
-    int value;
+    Opcode  opcode;
+    ssize_t value;
 
 public:
-    Instruction(Opcode opcode, int value)
-    {
-        this->opcode = opcode;
-        this->value = value;
-    }
+    Instruction(Opcode opcode, ssize_t value) : opcode ( opcode ), value ( value ){};
 
     Opcode getOpcode() const
     {
         return opcode;
     }
 
-    int getValue() const
+    ssize_t getValue() const
     {
         return value;
     }
 };
 
-void readInstructions(std::vector<Instruction>& instructions, std::vector<bool>& runList);
-size_t runCode(std::vector<Instruction>& instructions, std::vector<bool>& runList, int* accumulator);
+typedef std::vector<Instruction> InstructionList;
+typedef std::vector<bool> PreviouslyRunList;
+
+void readInstructions(InstructionList& instructions, PreviouslyRunList& runList);
+size_t runCode(const InstructionList& instructions, PreviouslyRunList& runList, ssize_t& reg);
 
 int main()
 {
-    std::vector<Instruction> instructions;
-    std::vector<bool> runList;
+    InstructionList   instructions;
+    PreviouslyRunList runList;
 
     readInstructions(instructions, runList);
 
-    int accumulator = 0;
+    ssize_t reg = 0;
+    runCode(instructions, runList, reg);
 
-    runCode(instructions, runList, &accumulator);
-    std::cout << accumulator << std::endl;
+    std::cout << reg << std::endl;
 
     return 0;
 }
 
-void readInstructions(std::vector<Instruction>& instructions, std::vector<bool>& runList)
+void readInstructions(InstructionList& instructions, PreviouslyRunList& runList)
 {
     std::string opcodeString;
-    int value;
+    ssize_t     value;
 
     while (std::cin >> opcodeString && std::cin >> value)
     {
@@ -76,7 +75,7 @@ void readInstructions(std::vector<Instruction>& instructions, std::vector<bool>&
     }
 }
 
-size_t runCode(std::vector<Instruction>& instructions, std::vector<bool>& runList, int* accumulator)
+size_t runCode(const InstructionList& instructions, PreviouslyRunList& runList, ssize_t& reg)
 {
     size_t i = 0;
 
@@ -95,7 +94,7 @@ size_t runCode(std::vector<Instruction>& instructions, std::vector<bool>& runLis
         {
             case Opcode::ACC:
             {
-                *accumulator += instructions[i].getValue();
+                reg += instructions[i].getValue();
                 break;
             }
             case Opcode::NOP:

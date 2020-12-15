@@ -3,24 +3,26 @@
 #include <string>
 #include <unordered_map>
 
+typedef std::unordered_map<uint64_t, uint64_t> MemoryMap;
+
 int main()
 {
-    std::unordered_map<uint64_t, uint64_t> memory;
+    MemoryMap memoryMap;
 
     std::string mask;
     std::string line;
 
     while (std::getline(std::cin, line))
     {
-        std::uint64_t pos = line.find("=");
+        size_t pos = line.find('=');
 
         if (pos == std::string::npos)
         {
             return 1;
         }
 
-        std::string first = line.substr(0, pos - 1);
-        std::string second = line.substr(pos + 2, line.size());
+        const std::string first  = line.substr(0, pos - 1);
+        const std::string second = line.substr(pos + 2, line.size());
 
         if (first.find("mask") != std::string::npos)
         {
@@ -28,8 +30,8 @@ int main()
         }
         else if (first.find("mem") != std::string::npos)
         {
-            uint64_t address  = stol(first.substr(4, line.size() - 5));
-            uint64_t value = stol(second);
+            const uint64_t address = stol(first.substr(4, line.size() - 5));
+            uint64_t       value   = stol(second);
 
             for (size_t i = 0; i < mask.size(); i++)
             {
@@ -43,13 +45,13 @@ int main()
                 }
             }
 
-            memory[address] = value;
+            memoryMap[address] = value;
         }
     }
 
     uint64_t sum = 0;
 
-    for (auto &pair : memory)
+    for (const auto &pair : memoryMap)
     {
         sum += pair.second;
     }

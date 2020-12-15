@@ -6,9 +6,9 @@ for file in $files; do
     binary=$(basename "$file" '.cpp')
     input=$(echo "$binary" | sed 's/.$/.input/')
 
-    g++ -O2 -o "$binary" "$file"
+    g++ -O2 -std=c++11 -Wall -Wextra -Wstrict-aliasing -pedantic -Werror -o "$binary" "$file"
     chmod +x "$binary"
 
     echo -n "${binary}: "
-    ./"$binary" < "$input"
+    time ./"$binary" < "$input"
 done

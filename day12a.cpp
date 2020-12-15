@@ -7,9 +7,9 @@ int main()
     char action;
     size_t value;
 
-    ssize_t x = 0;
-    ssize_t y = 0;
-    size_t degrees = 0;
+    ssize_t x   = 0;
+    ssize_t y   = 0;
+    size_t  deg = 0;
 
     while (std::cin >> action && std::cin >> value)
     {
@@ -37,29 +37,29 @@ int main()
             }
             case 'L':
             {
-                degrees = (degrees + value + 360) % 360;
+                deg = (deg + value + 360) % 360;
                 break;
             }
             case 'R':
             {
-                degrees = (degrees - value + 360) % 360;
+                deg = (deg - value + 360) % 360;
                 break;
             }
             case 'F':
             {
-                if (degrees == 0)
+                if (deg == 0)
                 {
                     x += value;
                 }
-                else if (degrees == 90)
+                else if (deg == 90)
                 {
                     y += value;
                 }
-                else if (degrees == 180)
+                else if (deg == 180)
                 {
                     x -= value;
                 }
-                else if (degrees == 270)
+                else if (deg == 270)
                 {
                     y -= value;
                 }

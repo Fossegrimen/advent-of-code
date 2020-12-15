@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <regex>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 
@@ -10,8 +11,8 @@ bool isValidPassport(Passport& passport);
 
 int main()
 {
-    Passport passport;
-    size_t valid = 0;
+    Passport    passport;
+    size_t      valid = 0;
     std::string line;
 
     while (std::getline(std::cin, line))
@@ -24,11 +25,11 @@ int main()
         }
 
         std::stringstream _line(line);
-        std::string keyValue;
+        std::string       keyValue;
 
         while (_line >> keyValue)
         {
-            std::size_t pos = keyValue.find(':');
+            const size_t pos = keyValue.find(':');
 
             if (pos == std::string::npos)
             {

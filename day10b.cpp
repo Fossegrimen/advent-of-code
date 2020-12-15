@@ -1,19 +1,21 @@
 
 #include <algorithm>
-#include <cmath>
 #include <iostream>
 #include <unordered_map>
 #include <vector>
 
-uint64_t findPossibilities(std::unordered_map<size_t, uint64_t>& adapterArrangementsMap, std::vector<size_t>& joltageRatings, size_t n);
-bool validJoltageDiff(size_t a, size_t b);
+typedef std::unordered_map<size_t, uint64_t> AdapterMap;
+typedef std::vector<size_t> joltageRatingList;
+
+uint64_t findPossibilities(AdapterMap& adapterMap, const joltageRatingList& joltageRatings, const size_t n);
+bool     validJoltageDiff(const size_t a, const size_t b);
 
 int main()
 {
-    std::vector<size_t> joltageRatings;
+    joltageRatingList joltageRatings;
     joltageRatings.push_back(0);
 
-    size_t joltageRating = 0;
+    size_t joltageRating;
 
     while (std::cin >> joltageRating)
     {
@@ -23,43 +25,49 @@ int main()
     std::sort(joltageRatings.begin(), joltageRatings.end());
     joltageRatings.push_back(joltageRatings[joltageRatings.size() - 1] + 3);
 
-    std::unordered_map<size_t, uint64_t> adapterArrangementsMap;
-    adapterArrangementsMap[joltageRatings.size() - 1] = 1;
+    AdapterMap adapterMap;
+    adapterMap[joltageRatings.size() - 1] = 1;
 
-    std::cout << findPossibilities(adapterArrangementsMap, joltageRatings, 0) << std::endl;
+    const uint64_t possibilities = findPossibilities(adapterMap, joltageRatings, 0);
+    std::cout << possibilities << std::endl;
 
     return 0;
 }
 
-uint64_t findPossibilities(std::unordered_map<size_t, uint64_t>& adapterArrangementsMap, std::vector<size_t>& joltageRatings, size_t n)
+uint64_t findPossibilities(AdapterMap& adapterMap, const joltageRatingList& joltageRatings, const size_t n)
 {
     if (n >= joltageRatings.size())
     {
         return 0;
     }
 
-    if (adapterArrangementsMap.find(n) != adapterArrangementsMap.end())
+    if (adapterMap.find(n) != adapterMap.end())
     {
-        return adapterArrangementsMap[n];
+        return adapterMap[n];
     }
 
     uint64_t possibilities = 0;
 
     for (size_t i = 1; i < 4; i++)
     {
-        if ((n + i) < joltageRatings.size() && validJoltageDiff(joltageRatings[n], joltageRatings[n + i]))
+        const bool validBound = ((n + i) < joltageRatings.size());
+
+        if (!validBound)
         {
-            possibilities += findPossibilities(adapterArrangementsMap, joltageRatings, n + i);
+            continue;
+        }
+
+        if (validJoltageDiff(joltageRatings[n], joltageRatings[n + i]))
+        {
+            possibilities += findPossibilities(adapterMap, joltageRatings, n + i);
         }
     }
 
-    adapterArrangementsMap[n] = possibilities;
-
-    return possibilities;
+    return (adapterMap[n] = possibilities);
 }
 
-bool validJoltageDiff(size_t a, size_t b)
+bool validJoltageDiff(const size_t a, const size_t b)
 {
-    size_t c = abs(b - a);
+    const size_t c = abs(b - a);
     return (c >= 1 && c <=3);
 }

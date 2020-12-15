@@ -11,7 +11,7 @@ int main()
 
     while (std::cin >> line)
     {
-        size_t row = 0;
+        size_t row    = 0;
         size_t column = 0;
 
         for (size_t i = 0; i < 7; i++)
@@ -30,7 +30,7 @@ int main()
             }
         }
 
-        size_t seatId = (row * 8) + column;
+        const size_t seatId = (row * 8) + column;
         seatIds.push_back(seatId);
     }
 

@@ -4,66 +4,56 @@
 #include <string>
 #include <vector>
 
-size_t getOccupiedAdjacentSeats(std::vector<std::string>& currentRound, const size_t width, const size_t height, size_t x, size_t y);
-bool checkOccupiedSeatInLine(std::vector<std::string>& currentRound, const size_t width, const size_t height, size_t x, size_t y, size_t delta_x, size_t delta_y);
-bool checkBounds(const size_t width, const size_t height, size_t x, size_t y);
+typedef std::vector<std::vector<char>> SeatMatrix;
+
+size_t getOccupiedAdjacentSeats(const SeatMatrix& seatMatrix, const size_t y, const size_t x);
+bool   isOccupiedInLine(const SeatMatrix& currentRound, const ssize_t y, const ssize_t x, const ssize_t delta_y, const ssize_t delta_x);
 
 int main()
 {
-    std::vector<std::string> currentRound;
-    std::vector<std::string> nextRound;
+    SeatMatrix  currentRound;
     std::string line;
 
     while (std::cin >> line)
     {
-        currentRound.push_back(line);
+        currentRound.push_back(std::vector<char>(line.begin(), line.end()));
     }
 
-    const size_t width = currentRound[0].size();
-    const size_t height = currentRound.size();
+    SeatMatrix nextRound = currentRound;
+    bool       running   = true;
 
-    line.clear();
-    nextRound.clear();
-
-    while (currentRound != nextRound)
+    while (running)
     {
-        size_t x = 0;
-        size_t y = 0;
+        currentRound = nextRound;
+        running      = false;
 
-        if (!nextRound.empty())
+        for (size_t y = 0; y < currentRound.size(); y++)
         {
-            currentRound = nextRound;
-            nextRound.clear();
-        }
-
-        for (size_t y = 0; y < height; y++)
-        {
-            for (size_t x = 0; x < width; x++)
+            for (size_t x = 0; x < currentRound[0].size(); x++)
             {
-                size_t occupiedSeats = getOccupiedAdjacentSeats(currentRound, width, height, x, y);
+                const size_t occupiedSeats = getOccupiedAdjacentSeats(currentRound, y, x);
 
                 if (currentRound[y][x] == 'L' && occupiedSeats == 0)
                 {
-                    line.push_back('#');
+                    nextRound[y][x] = '#';
+                    running         = true;
                 }
                 else if (currentRound[y][x] == '#' && occupiedSeats >= 5)
                 {
-                    line.push_back('L');
+                    nextRound[y][x] = 'L';
+                    running         = true;
                 }
                 else
                 {
-                    line.push_back(currentRound[y][x]);
+                    nextRound[y][x] = currentRound[y][x];
                 }
             }
-
-            nextRound.push_back(line);
-            line.clear();
         }
     }
 
     size_t occupiedSeats = 0;
 
-    for (size_t y = 0; y < height; y++)
+    for (size_t y = 0; y < nextRound.size(); y++)
     {
         occupiedSeats += std::count(nextRound[y].begin(), nextRound[y].end(), '#');
     }
@@ -73,46 +63,39 @@ int main()
     return 0;
 }
 
-size_t getOccupiedAdjacentSeats(std::vector<std::string>& currentRound, const size_t width, const size_t height, size_t x, size_t y)
+size_t getOccupiedAdjacentSeats(const SeatMatrix& seatMatrix, const size_t y, const size_t x)
 {
     size_t occupiedSeats = 0;
 
-    occupiedSeats += checkOccupiedSeatInLine(currentRound, width, height, x-1, y-1, -1, -1);
-    occupiedSeats += checkOccupiedSeatInLine(currentRound, width, height, x,   y-1,  0, -1);
-    occupiedSeats += checkOccupiedSeatInLine(currentRound, width, height, x+1, y-1,  1, -1);
-    occupiedSeats += checkOccupiedSeatInLine(currentRound, width, height, x-1, y,   -1,  0);
-    occupiedSeats += checkOccupiedSeatInLine(currentRound, width, height, x+1, y,    1,  0);
-    occupiedSeats += checkOccupiedSeatInLine(currentRound, width, height, x-1, y+1, -1,  1);
-    occupiedSeats += checkOccupiedSeatInLine(currentRound, width, height, x,   y+1,  0,  1);
-    occupiedSeats += checkOccupiedSeatInLine(currentRound, width, height, x+1, y+1,  1,  1);
+    occupiedSeats += isOccupiedInLine(seatMatrix, y, x, -1, -1);
+    occupiedSeats += isOccupiedInLine(seatMatrix, y, x, -1,  0);
+    occupiedSeats += isOccupiedInLine(seatMatrix, y, x, -1,  1);
+    occupiedSeats += isOccupiedInLine(seatMatrix, y, x,  0, -1);
+    occupiedSeats += isOccupiedInLine(seatMatrix, y, x,  0,  1);
+    occupiedSeats += isOccupiedInLine(seatMatrix, y, x,  1, -1);
+    occupiedSeats += isOccupiedInLine(seatMatrix, y, x,  1,  0);
+    occupiedSeats += isOccupiedInLine(seatMatrix, y, x,  1,  1);
 
     return occupiedSeats;
 }
 
-bool checkOccupiedSeatInLine(std::vector<std::string>& currentRound, const size_t width, const size_t height, size_t x, size_t y, size_t delta_x, size_t delta_y)
+bool isOccupiedInLine(const SeatMatrix& seatMatrix, const ssize_t y, const ssize_t x, const ssize_t delta_y, const ssize_t delta_x)
 {
-    if (!checkBounds(width, height, x, y))
+    const ssize_t _y = y + delta_y;
+    const ssize_t _x = x + delta_x;
+
+    if (_y < 0 || _y >= seatMatrix.size() || _x < 0 || _x >= seatMatrix[0].size())
     {
         return false;
     }
-    else if (currentRound[y][x] == 'L')
+    else if (seatMatrix[_y][_x] == 'L')
     {
         return false;
     }
-    else if (currentRound[y][x] == '#')
+    else if (seatMatrix[_y][_x] == '#')
     {
         return true;
     }
 
-    return checkOccupiedSeatInLine(currentRound, width, height, x + delta_x, y + delta_y, delta_x, delta_y);
-}
-
-bool checkBounds(const size_t width, const size_t height, size_t x, size_t y)
-{
-    if (x >= 0 && x <= (width - 1) && y >= 0 && y <= (height - 1))
-    {
-        return true;
-    }
-
-    return false;
+    return isOccupiedInLine(seatMatrix, _y, _x, delta_y, delta_x);
 }

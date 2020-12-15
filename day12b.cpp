@@ -7,11 +7,10 @@ int main()
     char action;
     size_t value;
 
+    ssize_t x   = 0;
+    ssize_t y   = 0;
     ssize_t w_x = 10;
     ssize_t w_y = 1;
-    ssize_t x = 0;
-    ssize_t y = 0;
-    ssize_t degrees = 0;
 
     while (std::cin >> action && std::cin >> value)
     {
@@ -41,7 +40,7 @@ int main()
             {
                 if (value == 90)
                 {
-                    int tmp = w_x;
+                    ssize_t tmp = w_x;
                     w_x = -w_y;
                     w_y = tmp;
                 }
@@ -52,7 +51,7 @@ int main()
                 }
                 else if (value == 270)
                 {
-                    int tmp = w_x;
+                    ssize_t tmp = w_x;
                     w_x = w_y;
                     w_y = -tmp;
                 }
@@ -63,7 +62,7 @@ int main()
             {
                 if (value == 90)
                 {
-                    int tmp = w_x;
+                    ssize_t tmp = w_x;
                     w_x = w_y;
                     w_y = -tmp;
                 }
@@ -74,7 +73,7 @@ int main()
                 }
                 else if (value == 270)
                 {
-                    int tmp = w_x;
+                    ssize_t tmp = w_x;
                     w_x = -w_y;
                     w_y = tmp;
                 }

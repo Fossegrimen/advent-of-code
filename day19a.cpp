@@ -1,0 +1,112 @@
+
+#include <iostream>
+#include <regex>
+#include <string>
+#include <unordered_map>
+
+typedef std::vector<char> RegexVector;
+typedef std::unordered_map<size_t, std::vector<ssize_t>> RuleMap;
+typedef std::unordered_map<size_t, char> LetterMap;
+
+const RegexVector getRegex(RuleMap& ruleMap, LetterMap& letterMap, const size_t index);
+
+int main()
+{
+    RuleMap   ruleMap;
+    LetterMap letterMap;
+
+    std::string line;
+
+    while (std::getline(std::cin, line))
+    {
+        if (line.empty())
+        {
+            break;
+        }
+
+        line = std::regex_replace(line, std::regex("[:]"), "");
+
+        if (std::regex_match(line, std::regex(".*[\"].*")))
+        {
+            line = std::regex_replace(line, std::regex("[\"]"), "");
+            std::stringstream _line(line);
+
+            size_t index;
+            _line >> index;
+
+            char letter;
+            _line >> letter;
+
+            letterMap[index] = letter;
+        }
+        else
+        {
+            line = std::regex_replace(line, std::regex("[|]"), "-1");
+            std::stringstream _line(line);
+
+            size_t index;
+            _line >> index;
+
+            std::vector<ssize_t> rules;
+            ssize_t rule;
+
+            while (_line >> rule)
+            {
+                rules.push_back(rule);
+            }
+
+            ruleMap[index] = rules;
+        }
+    }
+
+    RegexVector regexVector = getRegex(ruleMap, letterMap, 0);
+    std::string regexString(regexVector.begin(), regexVector.end());
+
+    size_t matches = 0;
+
+    while (std::getline(std::cin, line))
+    {
+        matches += std::regex_match(line, std::regex(regexString));
+    }
+
+    std::cout << matches << std::endl;
+
+    return 0;
+}
+
+const RegexVector getRegex(RuleMap& ruleMap, LetterMap& letterMap, const size_t index)
+{
+    RegexVector regexVector;
+
+    if (letterMap.find(index) != letterMap.end())
+    {
+        regexVector.push_back(letterMap[index]);
+    }
+    else if (ruleMap.find(index) != ruleMap.end())
+    {
+        regexVector.push_back('(');
+
+        for (ssize_t _index : ruleMap[index])
+        {
+            if (_index == -1)
+            {
+                regexVector.push_back('|');
+                continue;
+            }
+            else if (_index == -2)
+            {
+                regexVector.push_back('+');
+                continue;
+            }
+
+            for (char letter : getRegex(ruleMap, letterMap, _index))
+            {
+                regexVector.push_back(letter);
+            }
+        }
+
+        regexVector.push_back(')');
+    }
+
+    return regexVector;
+}

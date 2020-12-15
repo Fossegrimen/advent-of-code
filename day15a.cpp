@@ -1,9 +1,10 @@
 
+#include <algorithm>
 #include <iostream>
-#include <regex>
+#include <sstream>
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 int main()
 {
@@ -14,7 +15,7 @@ int main()
 
     std::string line;
     std::getline(std::cin, line);
-    line = std::regex_replace(line, std::regex(","), " ");
+    std::replace(line.begin(), line.end(), ',', ' ');
 
     std::stringstream _line(line);
 
@@ -34,7 +35,7 @@ int main()
             }
             else
             {
-                auto ptr = spokenNumberMap[lastSpokenNumber].cend();
+                const auto ptr = spokenNumberMap[lastSpokenNumber].cend();
                 lastSpokenNumber = *(ptr-1) - *(ptr-2);
             }
         }

@@ -14,15 +14,11 @@ enum class Opcode
 class Instruction
 {
 private:
-    Opcode opcode;
-    int value;
+    Opcode  opcode;
+    ssize_t value;
 
 public:
-    Instruction(Opcode opcode, int value)
-    {
-        this->opcode = opcode;
-        this->value = value;
-    }
+    Instruction(Opcode opcode, ssize_t value) : opcode ( opcode ), value ( value ){};
 
     Opcode getOpcode() const
     {
@@ -34,7 +30,7 @@ public:
         this->opcode = opcode;
     }
 
-    int getValue() const
+    ssize_t getValue() const
     {
         return value;
     }
@@ -45,56 +41,59 @@ public:
     }
 };
 
-void readInstructions(std::vector<Instruction>& instructions, std::vector<bool>& runList);
-size_t replaceNthOccurrence(std::vector<Instruction>& instructions, Opcode opcode, int n);
-size_t runCode(std::vector<Instruction>& instructions, std::vector<bool>& runList, int* accumulator);
+typedef std::vector<Instruction> InstructionList;
+typedef std::vector<bool> PreviouslyRunList;
+
+void readInstructions(InstructionList& instructions, PreviouslyRunList& runList);
+size_t replaceNthOccurrence(InstructionList& instructions, const Opcode opcode, size_t n);
+size_t runCode(const InstructionList& instructions, PreviouslyRunList& runList, ssize_t& reg);
 
 int main()
 {
-    std::vector<Instruction> instructions;
-    std::vector<bool> runList;
+    InstructionList   instructions;
+    PreviouslyRunList runList;
 
     readInstructions(instructions, runList);
 
-    for (size_t j = 0; j < std::count(instructions.begin(), instructions.end(), Opcode::NOP); j++)
+    for (size_t i = 0; i < 2; i++)
     {
-        size_t index = replaceNthOccurrence(instructions, Opcode::NOP, j);
-        int accumulator = 0;
-        size_t i = runCode(instructions, runList, &accumulator);
+        Opcode opcode;
 
-        if (i >= instructions.size())
+        if (i == 0)
         {
-            std::cout << accumulator << std::endl;
-            return 0;
+            opcode = Opcode::NOP;
+        }
+        else
+        {
+            opcode = Opcode::JMP;
         }
 
-        instructions[index].setOpcode(Opcode::NOP);
-        std::fill(runList.begin(), runList.end(), false);
-    }
-
-    for (size_t j = 0; j < std::count(instructions.begin(), instructions.end(), Opcode::JMP); j++)
-    {
-        size_t index = replaceNthOccurrence(instructions, Opcode::JMP, j);
-        int accumulator = 0;
-        size_t i = runCode(instructions, runList, &accumulator);
-
-        if (i >= instructions.size())
+        for (size_t j = 0; j < (size_t)std::count(instructions.begin(), instructions.end(), opcode); j++)
         {
-            std::cout << accumulator << std::endl;
-            return 0;
-        }
+            const size_t index = replaceNthOccurrence(instructions, opcode, j);
 
-        instructions[index].setOpcode(Opcode::JMP);
-        std::fill(runList.begin(), runList.end(), false);
+            ssize_t      reg = 0;
+            const size_t ip  = runCode(instructions, runList, reg);
+
+            if (ip >= instructions.size())
+            {
+                std::cout << reg << std::endl;
+                return 0;
+            }
+
+            std::fill(runList.begin(), runList.end(), false);
+
+            instructions[index].setOpcode(opcode);
+        }
     }
 
     return 1;
 }
 
-void readInstructions(std::vector<Instruction>& instructions, std::vector<bool>& runList)
+void readInstructions(InstructionList& instructions, PreviouslyRunList& runList)
 {
     std::string opcodeString;
-    int value;
+    ssize_t     value;
 
     while (std::cin >> opcodeString && std::cin >> value)
     {
@@ -115,11 +114,11 @@ void readInstructions(std::vector<Instruction>& instructions, std::vector<bool>&
     }
 }
 
-size_t replaceNthOccurrence(std::vector<Instruction>& instructions, Opcode opcode, int n)
+size_t replaceNthOccurrence(InstructionList& instructions, const Opcode opcode, size_t n)
 {
     size_t index = 0;
 
-    for (Instruction& instruction : instructions)
+    for (const auto& instruction : instructions)
     {
         if (instruction.getOpcode() == opcode)
         {
@@ -146,7 +145,7 @@ size_t replaceNthOccurrence(std::vector<Instruction>& instructions, Opcode opcod
     return index;
 }
 
-size_t runCode(std::vector<Instruction>& instructions, std::vector<bool>& runList, int* accumulator)
+size_t runCode(const InstructionList& instructions, PreviouslyRunList& runList, ssize_t& reg)
 {
     size_t i = 0;
 
@@ -165,7 +164,7 @@ size_t runCode(std::vector<Instruction>& instructions, std::vector<bool>& runLis
         {
             case Opcode::ACC:
             {
-                *accumulator += instructions[i].getValue();
+                reg += instructions[i].getValue();
                 break;
             }
             case Opcode::NOP:

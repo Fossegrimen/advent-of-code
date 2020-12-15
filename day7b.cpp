@@ -1,14 +1,14 @@
 
 #include <iostream>
-#include <regex>
 #include <string>
 #include <unordered_map>
 
-typedef std::unordered_map<std::string, std::size_t> BagRuleMap;
+typedef std::unordered_map<std::string, size_t> BagRuleMap;
 typedef std::unordered_map<std::string, BagRuleMap> BagRulesMap;
 
-void fillBagRulesMap(BagRulesMap& bagRulesMap);
-size_t countBags(BagRulesMap& bagRulesMap, std::string bagName);
+void   fillBagRulesMap(BagRulesMap& bagRulesMap);
+void   trimString(std::string& line);
+size_t countBags(BagRulesMap& bagRulesMap, const std::string bagName);
 
 int main()
 {
@@ -31,24 +31,21 @@ void fillBagRulesMap(BagRulesMap& bagRulesMap)
             continue;
         }
 
-        line = std::regex_replace(line, std::regex("bags?"), "");
-        line = std::regex_replace(line, std::regex(" , "), ":");
-        line = std::regex_replace(line, std::regex(" +"), " ");
-        line = std::regex_replace(line, std::regex(" [.]?$"), "");
+        trimString(line);
 
-        std::size_t pos = line.find("contain");
+        size_t pos = line.find(":");
 
         if (pos == std::string::npos)
         {
             return;
         }
 
-        std::string bagName = line.substr(0, pos - 1);
-        std::string bagRule = line.substr(pos + 8, line.size());
+        const std::string bagName = line.substr(0, pos);
+        std::string       bagRule = line.substr(pos + 1, line.size());
 
         do
         {
-            std::size_t pos = bagRule.find(":");
+            pos = bagRule.find(":");
 
             if (pos == std::string::npos)
             {
@@ -70,7 +67,39 @@ void fillBagRulesMap(BagRulesMap& bagRulesMap)
     }
 }
 
-size_t countBags(BagRulesMap& bagRulesMap, std::string bagName)
+void trimString(std::string& line)
+{
+    size_t pos = std::string::npos;
+
+    while ((pos = line.find(" bags")) != std::string::npos)
+    {
+        line.erase(pos, 5);
+    }
+
+    while ((pos = line.find(" bag")) != std::string::npos)
+    {
+        line.erase(pos, 4);
+    }
+
+    while ((pos = line.find(", ")) != std::string::npos)
+    {
+        line.erase(pos, 2);
+        line.insert(pos, ":");
+    }
+
+    while ((pos = line.find(".")) != std::string::npos)
+    {
+        line.erase(pos, 1);
+    }
+
+    while ((pos = line.find(" contain ")) != std::string::npos)
+    {
+        line.erase(pos, 9);
+        line.insert(pos, ":");
+    }
+}
+
+size_t countBags(BagRulesMap& bagRulesMap, const std::string bagName)
 {
     if (bagRulesMap.find(bagName) == bagRulesMap.end())
     {
@@ -79,9 +108,9 @@ size_t countBags(BagRulesMap& bagRulesMap, std::string bagName)
 
     size_t bagsAmount = 0;
 
-    for (auto& itr : bagRulesMap[bagName])
+    for (const auto& itr : bagRulesMap[bagName])
     {
-        bagsAmount += itr.second + itr.second * countBags(bagRulesMap, itr.first);
+        bagsAmount += itr.second + (itr.second * countBags(bagRulesMap, itr.first));
     }
 
     return bagsAmount;

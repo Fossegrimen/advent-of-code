@@ -2,25 +2,39 @@
 #include <iostream>
 #include <vector>
 
+typedef std::vector<uint64_t> PreambleList;
+
+uint64_t getBadPreamble(const PreambleList& preambleList);
+
 int main()
 {
-    std::vector<uint64_t> numbers;
-    uint64_t number = 0;
+    PreambleList preambleList;
+    uint64_t preamble;
 
-    while (std::cin >> number)
+    while (std::cin >> preamble)
     {
-        numbers.push_back(number);
+        preambleList.push_back(preamble);
     }
 
-    for (size_t i = 25; i < numbers.size(); i++)
+    const uint64_t badPreamble = getBadPreamble(preambleList);
+    std::cout << badPreamble << std::endl;
+
+    return 0;
+}
+
+uint64_t getBadPreamble(const PreambleList& preambleList)
+{
+    for (size_t i = 25; i < preambleList.size(); i++)
     {
         bool foundNumber = false;
 
-        for (size_t j = i - 25; j < i - 2; j++)
+        for (size_t j = i - 25; j < i; j++)
         {
-            for (size_t k = j + 1; k < i - 1; k++)
+            for (size_t k = j + 1; k < i; k++)
             {
-                if ((numbers[j] + numbers[k]) == numbers[i])
+                const uint64_t sum = preambleList[j] + preambleList[k];
+
+                if (sum == preambleList[i])
                 {
                     foundNumber = true;
                 }
@@ -29,10 +43,9 @@ int main()
 
         if (!foundNumber)
         {
-            std::cout << numbers[i] << std::endl;
-            return 0;
+            return preambleList[i];
         }
     }
 
-    return 1;
+    return 0;
 }

@@ -1,17 +1,17 @@
 
 #include <iostream>
-#include <regex>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 
 typedef std::unordered_map<std::string, std::string> Passport;
 
-bool isValidPassport(Passport& passport);
+bool isValidPassport(const Passport& passport);
 
 int main()
 {
-    Passport passport;
-    size_t valid = 0;
+    Passport    passport;
+    size_t      valid = 0;
     std::string line;
 
     while (std::getline(std::cin, line))
@@ -24,11 +24,11 @@ int main()
         }
 
         std::stringstream _line(line);
-        std::string keyValue;
+        std::string       keyValue;
 
         while (_line >> keyValue)
         {
-            std::size_t pos = keyValue.find(':');
+            const size_t pos = keyValue.find(':');
 
             if (pos == std::string::npos)
             {
@@ -49,7 +49,7 @@ int main()
     return 0;
 }
 
-bool isValidPassport(Passport& passport)
+bool isValidPassport(const Passport& passport)
 {
     if (passport.find("byr") == passport.end())
     {

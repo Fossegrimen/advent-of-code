@@ -1,30 +1,33 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
-std::vector<uint64_t> getAddresses(std::string mask, uint64_t address);
-std::vector<uint64_t> getAddressPossibilities(std::string mask, uint64_t address);
+typedef std::unordered_map<uint64_t, uint64_t> MemoryMap;
+typedef std::vector<uint64_t> Addresses;
+
+const Addresses getAddresses(const std::string mask, uint64_t address);
+const Addresses getAddressPossibilities(std::string mask, const uint64_t address);
 
 int main()
 {
-    std::unordered_map<uint64_t, uint64_t> memory;
+    MemoryMap memory;
 
     std::string mask;
     std::string line;
 
     while (std::getline(std::cin, line))
     {
-        std::size_t pos = line.find("=");
+        size_t pos = line.find("=");
 
         if (pos == std::string::npos)
         {
             return 1;
         }
 
-        std::string first = line.substr(0, pos - 1);
-        std::string second = line.substr(pos + 2, line.size());
+        const std::string first  = line.substr(0, pos - 1);
+        const std::string second = line.substr(pos + 2, line.size());
 
         if (first.find("mask") != std::string::npos)
         {
@@ -32,19 +35,19 @@ int main()
         }
         else if (first.find("mem") != std::string::npos)
         {
-            uint64_t address  = stol(first.substr(4, line.size() - 5));
-            uint64_t value = stol(second);
+            const uint64_t address = stol(first.substr(4, line.size() - 5));
+            const uint64_t value   = stol(second);
 
-            for (uint64_t address : getAddresses(mask, address))
+            for (uint64_t _address : getAddresses(mask, address))
             {
-                memory[address] = value;
+                memory[_address] = value;
             }
         }
     }
 
     uint64_t sum = 0;
 
-    for (auto &pair : memory)
+    for (const auto &pair : memory)
     {
         sum += pair.second;
     }
@@ -54,7 +57,7 @@ int main()
     return 0;
 }
 
-std::vector<uint64_t> getAddresses(std::string mask, uint64_t address)
+const Addresses getAddresses(const std::string mask, uint64_t address)
 {
     for (size_t i = 0; i < mask.size(); i++)
     {
@@ -67,10 +70,10 @@ std::vector<uint64_t> getAddresses(std::string mask, uint64_t address)
     return getAddressPossibilities(mask, address);
 }
 
-std::vector<uint64_t> getAddressPossibilities(std::string mask, uint64_t address)
+const Addresses getAddressPossibilities(std::string mask, const uint64_t address)
 {
-    std::vector<uint64_t> addresses;
-    std::size_t pos = mask.find("X");
+    Addresses    addresses;
+    const size_t pos = mask.find("X");
 
     if (pos == std::string::npos)
     {
