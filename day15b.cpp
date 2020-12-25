@@ -3,12 +3,17 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <unordered_map>
 #include <vector>
+
+struct PreviousRecord
+{
+    size_t record1;
+    size_t record2;
+};
 
 int main()
 {
-    std::unordered_map<size_t, std::vector<size_t>> spokenNumberMap;
+    std::vector<size_t> spokenNumberVector(60000002, 0);
 
     size_t lastSpokenNumber;
     size_t round = 1;
@@ -21,30 +26,43 @@ int main()
 
     while (_line >> lastSpokenNumber)
     {
-        spokenNumberMap[lastSpokenNumber].push_back(round);
+        spokenNumberVector[2 * lastSpokenNumber] = round;
         round++;
     }
 
-    while (round < 30000001)
+    struct PreviousRecord* previousRecord = (struct PreviousRecord*)&spokenNumberVector[2 * lastSpokenNumber];
+
+    for (; round < 30000001; round++)
     {
-        if (spokenNumberMap.find(lastSpokenNumber) != spokenNumberMap.end())
+        if (previousRecord->record1 > 0)
         {
-            if (spokenNumberMap[lastSpokenNumber].size() == 1)
+            if (previousRecord->record2 > 0)
             {
-                lastSpokenNumber = 0;
+                const size_t diff = previousRecord->record2 - previousRecord->record1;
+                previousRecord = (struct PreviousRecord*)&spokenNumberVector[2 * diff];
             }
             else
             {
-                const auto ptr = spokenNumberMap[lastSpokenNumber].cend();
-                lastSpokenNumber = *(ptr-1) - *(ptr-2);
+                previousRecord = (struct PreviousRecord*)&spokenNumberVector[0];
             }
         }
 
-        spokenNumberMap[lastSpokenNumber].push_back(round);
-        round++;
+        if (previousRecord->record1 > 0)
+        {
+            if (previousRecord->record2 != 0)
+            {
+                previousRecord->record1 = previousRecord->record2;
+            }
+
+            previousRecord->record2 = round;
+        }
+        else
+        {
+            previousRecord->record1 = round;
+        }
     }
 
-    std::cout << lastSpokenNumber << std::endl;
+    std::cout << (((size_t*)previousRecord - (size_t*)&spokenNumberVector[0]) / 2) << std::endl;
 
     return 0;
 }
