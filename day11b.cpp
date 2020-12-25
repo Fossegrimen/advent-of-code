@@ -84,7 +84,7 @@ bool isOccupiedInLine(const SeatMatrix& seatMatrix, const ssize_t y, const ssize
     const ssize_t _y = y + delta_y;
     const ssize_t _x = x + delta_x;
 
-    if (_y < 0 || _y >= seatMatrix.size() || _x < 0 || _x >= seatMatrix[0].size())
+    if (_y < 0 || _y >= (ssize_t)seatMatrix.size() || _x < 0 || _x >= (ssize_t)seatMatrix[0].size())
     {
         return false;
     }

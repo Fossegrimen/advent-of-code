@@ -81,7 +81,7 @@ size_t getOccupiedAdjacentSeats(const SeatMatrix& seatMatrix, const size_t y, co
 
 bool isOccupied(const SeatMatrix& seatMatrix, const ssize_t y, const ssize_t x)
 {
-    if (y < 0 || y >= seatMatrix.size() || x < 0 || x >= seatMatrix[0].size())
+    if (y < 0 || y >= (ssize_t)seatMatrix.size() || x < 0 || x >= (ssize_t)seatMatrix[0].size())
     {
         return false;
     }
