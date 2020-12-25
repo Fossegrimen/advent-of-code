@@ -24,11 +24,17 @@ int main()
             break;
         }
 
-        line = std::regex_replace(line, std::regex("[:]"), "");
+        line = line.erase(line.find(':'), 1);
 
-        if (std::regex_match(line, std::regex(".*[\"].*")))
+        if (line.find('\"') != std::string::npos)
         {
-            line = std::regex_replace(line, std::regex("[\"]"), "");
+            size_t pos = std::string::npos;
+
+            while ((pos = line.find("\"")) != std::string::npos)
+            {
+                line.erase(pos, 1);
+            }
+
             std::stringstream _line(line);
 
             size_t index;
@@ -41,7 +47,14 @@ int main()
         }
         else
         {
-            line = std::regex_replace(line, std::regex("[|]"), "-1");
+            const size_t pos = line.find('|');
+
+            if (pos != std::string::npos)
+            {
+                line = line.erase(pos, 1);
+                line = line.insert(pos, "-1");
+            }
+
             std::stringstream _line(line);
 
             size_t index;
