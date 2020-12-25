@@ -10,5 +10,5 @@ for file in $files; do
     chmod +x "$binary"
 
     echo -n "${binary}: "
-    time ./"$binary" < "$input"
+    tcsh -c "time ./$binary < $input"
 done
