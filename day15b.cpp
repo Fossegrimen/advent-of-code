@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-struct PreviousRecord
+struct Record
 {
     size_t record1;
     size_t record2;
@@ -13,7 +13,7 @@ struct PreviousRecord
 
 int main()
 {
-    std::vector<size_t> spokenNumberVector(60000002, 0);
+    std::vector<Record> spokenNumberVector(30000001, {0, 0});
 
     size_t lastSpokenNumber;
     size_t round = 1;
@@ -26,43 +26,43 @@ int main()
 
     while (_line >> lastSpokenNumber)
     {
-        spokenNumberVector[2 * lastSpokenNumber] = round;
+        spokenNumberVector[lastSpokenNumber].record1 = round;
         round++;
     }
 
-    struct PreviousRecord* previousRecord = (struct PreviousRecord*)&spokenNumberVector[2 * lastSpokenNumber];
+    struct Record* record = &spokenNumberVector[lastSpokenNumber];
 
     for (; round < 30000001; round++)
     {
-        if (previousRecord->record1 > 0)
+        if (record->record1 > 0)
         {
-            if (previousRecord->record2 > 0)
+            if (record->record2 > 0)
             {
-                const size_t diff = previousRecord->record2 - previousRecord->record1;
-                previousRecord = (struct PreviousRecord*)&spokenNumberVector[2 * diff];
+                const size_t diff = record->record2 - record->record1;
+                record = &spokenNumberVector[diff];
             }
             else
             {
-                previousRecord = (struct PreviousRecord*)&spokenNumberVector[0];
+                record = &spokenNumberVector[0];
             }
         }
 
-        if (previousRecord->record1 > 0)
+        if (record->record1 > 0)
         {
-            if (previousRecord->record2 != 0)
+            if (record->record2 != 0)
             {
-                previousRecord->record1 = previousRecord->record2;
+                record->record1 = record->record2;
             }
 
-            previousRecord->record2 = round;
+            record->record2 = round;
         }
         else
         {
-            previousRecord->record1 = round;
+            record->record1 = round;
         }
     }
 
-    std::cout << (((size_t*)previousRecord - (size_t*)&spokenNumberVector[0]) / 2) << std::endl;
+    std::cout << (record - &spokenNumberVector[0]) << std::endl;
 
     return 0;
 }

@@ -1,12 +1,14 @@
 
+#include <algorithm>
 #include <cstdlib>
+#include <deque>
 #include <iostream>
-#include <queue>
+#include <vector>
 
-typedef std::queue<size_t> PlayerCards;
+typedef std::deque<size_t> PlayerCards;
 
-void         getPlayerCards(PlayerCards& playerCards);
-PlayerCards* playGame(PlayerCards& player1Cards, PlayerCards& player2Cards);
+void getPlayerCards(PlayerCards& playerCards);
+bool playGame(PlayerCards& player1Cards, PlayerCards& player2Cards);
 
 int main()
 {
@@ -17,12 +19,13 @@ int main()
     getPlayerCards(player2Cards);
 
     size_t score = 0;
-    PlayerCards* winnersCards = playGame(player1Cards, player2Cards);
 
-    while (!winnersCards->empty())
+    PlayerCards& winnersCards = playGame(player1Cards, player2Cards) ? player1Cards : player2Cards;
+
+    while (!winnersCards.empty())
     {
-        score += winnersCards->front() * winnersCards->size();
-        winnersCards->pop();
+        score += winnersCards.front() * winnersCards.size();
+        winnersCards.pop_front();
     }
 
     std::cout << score << std::endl;
@@ -42,36 +45,33 @@ void getPlayerCards(PlayerCards& playerCards)
             break;
         }
 
-        playerCards.push(std::atol(line.c_str()));
+        playerCards.push_back(std::atol(line.c_str()));
     }
 }
 
-PlayerCards* playGame(PlayerCards& player1Cards, PlayerCards& player2Cards)
+bool playGame(PlayerCards& player1Cards, PlayerCards& player2Cards)
 {
     while (!player1Cards.empty() && !player2Cards.empty())
     {
         const size_t card1 = player1Cards.front();
-        player1Cards.pop();
-
         const size_t card2 = player2Cards.front();
-        player2Cards.pop();
 
-        if (card1 > card2)
+        player1Cards.pop_front();
+        player2Cards.pop_front();
+
+        bool winner = (card1 > card2);
+
+        if (winner)
         {
-            player1Cards.push(card1);
-            player1Cards.push(card2);
-        }
-        else if (card2 > card1)
-        {
-            player2Cards.push(card2);
-            player2Cards.push(card1);
+            player1Cards.push_back(card1);
+            player1Cards.push_back(card2);
         }
         else
         {
-            std::cout << "Infinite loop" << std::endl;
-            exit(1);
+            player2Cards.push_back(card2);
+            player2Cards.push_back(card1);
         }
     }
 
-    return player2Cards.empty() ? &player1Cards : &player2Cards;
+    return player2Cards.empty() ? true : false;
 }
