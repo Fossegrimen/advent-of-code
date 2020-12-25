@@ -68,6 +68,6 @@ uint64_t findPossibilities(AdapterMap& adapterMap, const joltageRatingList& jolt
 
 bool validJoltageDiff(const size_t a, const size_t b)
 {
-    const size_t c = abs(b - a);
+    const size_t c = (b - a);
     return (c >= 1 && c <=3);
 }

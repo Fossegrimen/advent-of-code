@@ -6,7 +6,7 @@ for file in $files; do
     binary=$(basename "$file" '.cpp')
     input=$(echo "$binary" | sed 's/.$/.input/')
 
-    g++ -O2 -std=c++11 -Wall -Wextra -Wstrict-aliasing -pedantic -Werror -o "$binary" "$file"
+    g++ -std=c++11 -O3 -Ofast -Wall -Wextra -Wstrict-aliasing -pedantic -Werror -o "$binary" "$file"
     chmod +x "$binary"
 
     echo -n "${binary}: "

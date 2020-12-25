@@ -23,7 +23,6 @@ typedef std::vector<std::vector<char>>  TileData;
 class Tile
 {
 private:
-    size_t    tileId;
     TileData* tileData;
     Tile*     neighborTiles[4];
 
@@ -134,9 +133,8 @@ private:
     }
 
 public:
-    Tile(const size_t tileId, TileData* tileData, const size_t translation)
-        : tileId{tileId}
-        , tileData{getTranslatedTileData(tileData, translation)}
+    Tile(TileData* tileData, const size_t translation)
+        : tileData{getTranslatedTileData(tileData, translation)}
         , neighborTiles{nullptr, nullptr, nullptr, nullptr}
     {}
 
@@ -181,13 +179,13 @@ private:
     Tiles tiles;
     TileTranslations fullTiles;
 
-    void addTile(const size_t tileId, TileData* tileData)
+    void addTile(TileData* tileData)
     {
         TileTranslations tileTranslations;
 
         for (size_t translation = 0; translation < 8; translation++)
         {
-            tileTranslations.push_back(new Tile(tileId, tileData, translation));
+            tileTranslations.push_back(new Tile(tileData, translation));
         }
 
         tiles.push_back(tileTranslations);
@@ -329,7 +327,6 @@ public:
                 continue;
             }
 
-            size_t tileId = std::stoi(line.substr(5, line.size()));
             TileData* tileData = new TileData();
 
             while (std::getline(std::cin, line))
@@ -342,7 +339,7 @@ public:
                 tileData->push_back(std::vector<char>(line.begin(), line.end()));
             }
 
-            addTile(tileId, tileData);
+            addTile(tileData);
         }
     }
 
@@ -406,7 +403,7 @@ public:
 
         for (size_t translation = 0; translation < 8; translation++)
         {
-            fullTiles.push_back(new Tile(0, fullTileData, translation));
+            fullTiles.push_back(new Tile(fullTileData, translation));
         }
     }
 
