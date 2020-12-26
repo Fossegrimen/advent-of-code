@@ -2,9 +2,11 @@
 #include <iostream>
 #include <vector>
 
+typedef std::vector<size_t> Vector;
+
 int main()
 {
-    std::vector<size_t> expenses;
+    Vector expenses;
     size_t expense = 0;
 
     while (std::cin >> expense)

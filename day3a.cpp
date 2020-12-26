@@ -3,9 +3,11 @@
 #include <string>
 #include <vector>
 
+typedef std::vector<std::string> Matrix;
+
 int main()
 {
-    std::vector<std::string> map;
+    Matrix map;
     std::string line;
 
     while (std::cin >> line)

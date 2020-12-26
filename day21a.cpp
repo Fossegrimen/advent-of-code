@@ -60,7 +60,7 @@ void readRecipes(IndexMap& foodIndexMap, IndexMap& allergenIndexMap, Matrix& foo
 
         while (_line >> food)
         {
-            size_t index = getIndex(foodIndexMap, food);
+            const size_t index = getIndex(foodIndexMap, food);
             increaseIndex(foodVector, index);
         }
 

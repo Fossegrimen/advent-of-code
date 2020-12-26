@@ -7,9 +7,11 @@
 #include <string>
 #include <vector>
 
+typedef std::vector<size_t> Vector;
+
 int main()
 {
-    std::vector<size_t> busIds;
+    Vector busIds;
 
     std::string line;
     std::getline(std::cin, line);

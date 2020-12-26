@@ -4,9 +4,11 @@
 #include <string>
 #include <vector>
 
+typedef std::vector<size_t> Vector;
+
 int main()
 {
-    std::vector<size_t> seatIds;
+    Vector seatIds;
     std::string line;
 
     while (std::cin >> line)

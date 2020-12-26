@@ -4,22 +4,94 @@
 #include <regex>
 #include <sstream>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 typedef std::vector<size_t> Ticket;
-typedef std::vector<std::vector<size_t>> RulesMatrix;
-typedef std::vector<std::vector<size_t>> TicketMatrix;
+typedef std::vector<std::vector<size_t>> Rules;
+typedef std::vector<std::vector<size_t>> Tickets;
 
-bool isValid(RulesMatrix rulesMatrix, size_t value);
-bool isValid(Ticket ticket, size_t value);
+void readRules(Rules& rules);
+void readOwnTicket(Ticket& ticket);
+void readTickets(const Rules& rules, Tickets& tickets);
+bool isValid(const Rules& rules, const size_t value);
+bool isValid(const Ticket& ticket, const size_t value);
 
 int main()
 {
-    Ticket ticket;
-    TicketMatrix ticketMatrix;
-    RulesMatrix rulesMatrix;
+    Ticket  ticket;
+    Tickets tickets;
+    Rules   rules;
 
+    readRules(rules);
+    readOwnTicket(ticket);
+    readTickets(rules, tickets);
+
+    std::vector<std::vector<size_t>> validColumnsPerRuleMatrix;
+
+    for (size_t i = 0; i < tickets[0].size(); i++)
+    {
+        std::vector<size_t> columns;
+
+        for (size_t j = 0; j < rules.size(); j++)
+        {
+            bool valid = true;
+
+            for (size_t k = 0; k < tickets.size(); k++)
+            {
+                if (!isValid(rules[j], tickets[k][i]))
+                {
+                    valid = false;
+                    break;
+                }
+            }
+
+            if (valid)
+            {
+                columns.push_back(j);
+            }
+        }
+
+        validColumnsPerRuleMatrix.push_back(columns);
+    }
+
+    for (size_t i = 0; i < validColumnsPerRuleMatrix.size(); i++)
+    {
+        for (std::vector<size_t>& columnsA : validColumnsPerRuleMatrix)
+        {
+            if (columnsA.size() != 1)
+            {
+                continue;
+            }
+
+            for (std::vector<size_t>& columnsB : validColumnsPerRuleMatrix)
+            {
+                if (columnsA == columnsB)
+                {
+                    continue;
+                }
+
+                columnsB.erase(std::remove(columnsB.begin(), columnsB.end(), columnsA[0]), columnsB.end());
+            }
+        }
+    }
+
+    size_t product = 1;
+
+    for (size_t i = 0; i < validColumnsPerRuleMatrix.size(); i++)
+    {
+        if (validColumnsPerRuleMatrix[i][0] < 6)
+        {
+            product *= ticket[i];
+        }
+    }
+
+    std::cout << product << std::endl;
+
+    return 0;
+}
+
+void readRules(Rules& rules)
+{
     std::string line;
 
     while (std::getline(std::cin, line))
@@ -36,31 +108,39 @@ int main()
 
         std::stringstream _line(line);
 
-        std::vector<size_t> rules;
+        std::vector<size_t> _rules;
         size_t rule;
 
         while (_line >> rule)
         {
-            rules.push_back(rule);
+            _rules.push_back(rule);
         }
 
-        rulesMatrix.push_back(rules);
+        rules.push_back(_rules);
     }
+}
+
+void readOwnTicket(Ticket& ticket)
+{
+    std::string line;
 
     std::getline(std::cin, line);
+    std::getline(std::cin, line);
 
-    if (std::getline(std::cin, line))
+    line = std::regex_replace(line, std::regex(","), " ");
+
+    std::stringstream _line(line);
+    size_t value;
+
+    while (_line >> value)
     {
-        line = std::regex_replace(line, std::regex(","), " ");
-
-        std::stringstream _line(line);
-        size_t value;
-
-        while (_line >> value)
-        {
-            ticket.push_back(value);
-        }
+        ticket.push_back(value);
     }
+}
+
+void readTickets(const Rules& rules, Tickets& tickets)
+{
+    std::string line;
 
     std::getline(std::cin, line);
     std::getline(std::cin, line);
@@ -68,18 +148,18 @@ int main()
     while (std::getline(std::cin, line))
     {
         line = std::regex_replace(line, std::regex(","), " ");
+        std::stringstream _line(line);
 
-        std::vector<size_t> ticket;
+        Ticket ticket;
         bool valid = true;
 
-        std::stringstream _line(line);
         size_t value = 0;
 
         while (_line >> value)
         {
             ticket.push_back(value);
 
-            if (!isValid(rulesMatrix, value))
+            if (!isValid(rules, value))
             {
                 valid = false;
             }
@@ -87,72 +167,14 @@ int main()
 
         if (valid)
         {
-            ticketMatrix.push_back(ticket);
+            tickets.push_back(ticket);
         }
     }
-
-    std::vector<std::vector<size_t>> okMatrix;
-
-    for (size_t i = 0; i < ticketMatrix[0].size(); i++)
-    {
-        std::vector<size_t> vect;
-
-        for (size_t k = 0; k < rulesMatrix.size(); k++)
-        {
-            bool valid = true;
-
-            for (size_t j = 0; j < ticketMatrix.size(); j++)
-            {
-                if (!isValid(rulesMatrix[k], ticketMatrix[j][i]))
-                {
-                    valid = false;
-                }
-            }
-
-            if (valid)
-            {
-                vect.push_back(k);
-            }
-        }
-
-        okMatrix.push_back(vect);
-    }
-
-    for (size_t l = 0; l < 10; l++)
-    {
-        for (size_t i = 0; i < okMatrix.size(); i++)
-        {
-            if (okMatrix[i].size() == 1)
-            {
-                for (size_t j = 0; j < okMatrix.size(); j++)
-                {
-                    if (i != j)
-                    {
-                        okMatrix[j].erase(std::remove(okMatrix[j].begin(), okMatrix[j].end(), okMatrix[i][0]), okMatrix[j].end());
-                    }
-                }
-            }
-        }
-    }
-
-    size_t product = 1;
-
-    for (size_t i = 0; i < okMatrix.size(); i++)
-    {
-        if (okMatrix[i][0] < 6)
-        {
-            product *= ticket[i];
-        }
-    }
-
-    std::cout << product << std::endl;
-
-    return 0;
 }
 
-bool isValid(RulesMatrix rulesMatrix, size_t value)
+bool isValid(const Rules& rules, const size_t value)
 {
-    for (const auto& vect : rulesMatrix)
+    for (const auto& vect : rules)
     {
         if ((value >= vect[0] && value <= vect[1]) ||
             (value >= vect[2] && value <= vect[3]))
@@ -164,7 +186,7 @@ bool isValid(RulesMatrix rulesMatrix, size_t value)
     return false;
 }
 
-bool isValid(Ticket ticket, size_t value)
+bool isValid(const Ticket& ticket, const size_t value)
 {
     if ((value >= ticket[0] && value <= ticket[1]) ||
         (value >= ticket[2] && value <= ticket[3]))

@@ -37,6 +37,8 @@ uint64_t getBadPreamble(const PreambleList& preambleList)
                 if (sum == preambleList[i])
                 {
                     foundNumber = true;
+                    j = i;
+                    break;
                 }
             }
         }
